@@ -2,6 +2,9 @@
 from fastapi import FastAPI  #fastapi libreria
 import asyncio
 from typing import Optional
+from fastapi import HTTPException, status
+
+
 
 #instancia del servidor
 #instacioa del servidor 
@@ -62,3 +65,57 @@ async def Consultatodos(id: Optional[int] = None):
         return{"mensaje": "usuario no encontrado","status":"200"}
     else:
         return{"mensaje":"No se proporciono id","status":"200"}
+
+# agregar usuario (POST)
+@app.post("/v1/usuarios/", tags=["CRUD HTTP"])
+async def agregar_usuario(usuario: dict):
+    for usr in usuarios:
+        if usr["id"] == usuario.get("id"):
+            raise HTTPException(
+                status_code=status.HTTP_400_BAD_REQUEST,
+                detail="El ID ya existe"
+            )
+
+    usuarios.append(usuario)
+
+    return {
+        "mensaje": "Usuario agregado correctamente",
+        "usuario": usuario,
+        "status": 200
+    }
+
+
+# actualizar usuario (PUT)
+@app.put("/v1/usuarios/", tags=["CRUD HTTP"])
+async def actualizar_usuario(usuario: dict):
+    for usr in usuarios:
+        if usr["id"] == usuario.get("id"):
+            usr.update(usuario)
+            return {
+                "mensaje": "Usuario actualizado correctamente",
+                "usuario": usr,
+                "status": 200
+            }
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Usuario no encontrado"
+    )
+
+
+# eliminar usuario (DELETE)
+@app.delete("/v1/usuarios/", tags=["CRUD HTTP"])
+async def eliminar_usuario(usuario: dict):
+    for usr in usuarios:
+        if usr["id"] == usuario.get("id"):
+            usuarios.remove(usr)
+            return {
+                "mensaje": "Usuario eliminado correctamente",
+                "usuario": usr,
+                "status": 200
+            }
+
+    raise HTTPException(
+        status_code=status.HTTP_404_NOT_FOUND,
+        detail="Usuario no encontrado"
+    )
