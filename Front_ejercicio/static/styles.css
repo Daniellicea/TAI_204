@@ -1,0 +1,52 @@
+body{
+  font-family: "Times New Roman";
+  background: white;
+  color: black;
+}
+
+h1{
+  text-align: left;
+  font-size: 20px;
+}
+
+h3{
+  font-size: 16px;
+  font-weight: normal;
+}
+
+input{
+  border: 1px solid black;
+  padding: 3px;
+  margin: 2px;
+}
+
+button{
+  border: 1px solid black;
+  background: lightgray;
+  padding: 3px;
+  cursor: pointer;
+}
+
+table{
+  border: 2px solid black;
+  width: 80%;
+}
+
+th{
+  border: 1px solid black;
+  background: gray;
+  color: white;
+  font-weight: normal;
+}
+
+td{
+  border: 1px solid black;
+  padding: 4px;
+  text-align: left;
+}
+
+td input{
+  width: 90%;
+  border: 1px solid black;
+  padding: 2px;
+}

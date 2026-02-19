@@ -62,9 +62,18 @@ async def Consultatodos(id: Optional[int] = None):
                     "Usuario": usuario,
                     "status": 200
                 }
-        return{"mensaje": "usuario no encontrado","status":"200"}
+        return {
+            "mensaje": "Usuario no encontrado",
+            "status": 404
+        }
     else:
-        return{"mensaje":"No se proporciono id","status":"200"}
+        # Devuelve la lista completa de usuarios
+        return {
+            "mensaje": "Lista de usuarios",
+            "Usuarios": usuarios,
+            "status": 200
+        }
+
 
 # agregar usuario (POST)
 @app.post("/v1/usuarios/", tags=["CRUD HTTP"])

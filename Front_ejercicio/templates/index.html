@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="UTF-8">
+  <title>Usuarios</title>
+</head>
+<body>
+  <h1>Usuarios</h1>
+
+  <a href="{{ url_for('crear_usuario') }}">Crear nuevo usuario</a>
+
+  <table border="1" cellpadding="5">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nombre</th>
+        <th>Edad</th>
+        <th>Acciones</th>
+      </tr>
+    </thead>
+    <tbody>
+      {% for u in usuarios %}
+      <tr>
+        <form method="POST">
+          <td>{{ u.id }}</td>
+          <td><input type="text" name="nombre" value="{{ u.nombre }}"></td>
+          <td><input type="number" name="edad" value="{{ u.edad }}"></td>
+          <td>
+            <input type="hidden" name="id" value="{{ u.id }}">
+            <button type="submit" name="accion" value="actualizar">Modificar</button>
+            <button type="submit" name="accion" value="eliminar">Eliminar</button>
+          </td>
+        </form>
+      </tr>
+      {% endfor %}
+    </tbody>
+  </table>
+</body>
+</html>
