@@ -4,7 +4,7 @@ import asyncio
 from typing import Optional
 from fastapi import HTTPException, status
 
-
+from pydantic import BaseModel
 
 #instancia del servidor
 #instacioa del servidor 
@@ -31,12 +31,24 @@ async def Hola():
         "status": 200
     }
 
+
+
+
 #ID ficticia
 usuarios = [
     {"id": 1, "nombre": "Diego", "edad": 21},
     {"id": 2, "nombre": "Coral", "edad": 21},
     {"id": 3, "nombre": "Saul", "edad": 21},
 ]
+
+#modelo de Pydantic de validacion
+
+class crear_usuario(BaseModel):
+    id: int
+    nombre: str
+    edad: int
+
+
 
 @app.get("/V1/Usuario/{id}", tags=['Parametro obligatorio'])
 async def Consultauno(id: int):
@@ -52,7 +64,7 @@ async def Consultauno(id: int):
         "status": 404
     }
 
-@app.get("/V1/Usuarios/", tags=['Parametro opcional'])
+@app.get("/V1/Usuarios/", tags=['CRUD HTTP'])
 async def Consultatodos(id: Optional[int] = None):
     if id is not None:
         for usuario in usuarios:
@@ -77,9 +89,9 @@ async def Consultatodos(id: Optional[int] = None):
 
 # agregar usuario (POST)
 @app.post("/v1/usuarios/", tags=["CRUD HTTP"])
-async def agregar_usuario(usuario: dict):
+async def agregar_usuario(usuario: crear_usuario):
     for usr in usuarios:
-        if usr["id"] == usuario.get("id"):
+        if usr["id"] == usuario.id:
             raise HTTPException(
                 status_code=status.HTTP_400_BAD_REQUEST,
                 detail="El ID ya existe"
