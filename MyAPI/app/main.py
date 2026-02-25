@@ -4,7 +4,7 @@ import asyncio
 from typing import Optional
 from fastapi import HTTPException, status
 
-from pydantic import BaseModel
+from pydantic import BaseModel, Field
 
 #instancia del servidor
 #instacioa del servidor 
@@ -44,9 +44,9 @@ usuarios = [
 #modelo de Pydantic de validacion
 
 class crear_usuario(BaseModel):
-    id: int
-    nombre: str
-    edad: int
+    id: int = Field (..., gt=0, description = "indentificador de usuario")
+    nombre: str= Field(...,min_length=3, max_length = 50, example= "Juanito doe")
+    edad: int = Field(..., ge=0, description="Edad validad entre 1 y 125")
 
 
 
@@ -140,3 +140,6 @@ async def eliminar_usuario(usuario: dict):
         status_code=status.HTTP_404_NOT_FOUND,
         detail="Usuario no encontrado"
     )
+
+
+
