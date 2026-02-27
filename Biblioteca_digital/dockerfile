@@ -1,0 +1,18 @@
+# Base image con Python 3.12 slim
+FROM python:3.12-slim
+
+# Crear carpeta de trabajo
+WORKDIR /app
+
+# Copiar y instalar dependencias
+COPY requirements.txt .
+RUN pip install --no-cache-dir -r requirements.txt
+
+# Copiar código del API
+COPY ./app ./app
+
+# Exponer el puerto del contenedor
+EXPOSE 5000
+
+# Comando para ejecutar FastAPI
+CMD ["uvicorn", "app.main:app", "--host", "0.0.0.0", "--port", "5000", "--reload"]

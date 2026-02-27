@@ -1,0 +1,10 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: server_fastAPI_biblioteca
+    ports:
+      - "5002:5000"   # 5002 en tu PC → 5000 dentro del contenedor
+    volumes:
+      - ./app:/app/app
