@@ -32,3 +32,13 @@ class Libro(BaseModel):
         if value not in ["disponible", "prestado"]:
             raise ValueError("Estado inválido")
         return value
+    
+class Prestamo(BaseModel):
+    id: int
+    id_usuario: int
+    id_libro: int
+    fecha: datetime = datetime.now()
+
+usuarios: List[Usuario] = []
+libros: List[Libro] = []
+prestamos: List[Prestamo] = []
