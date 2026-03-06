@@ -1,0 +1,13 @@
+version: "3.9"
+
+services:
+  api:
+    build: .
+    container_name: server_fastAPI___miApi_JWT
+    ports:
+      - "8009:8009"
+    volumes:
+      - ./app:/app/app
+
+#comando para correr el contenedor 
+#docker-compose up --build
