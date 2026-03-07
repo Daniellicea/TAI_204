@@ -97,7 +97,7 @@ async def login(datos: OAuth2PasswordRequestForm = Depends()):
             detail="Usuario o contraseña incorrectos"
         )
 
-    token_acceso = crear_token(data={"sub": datos.username})
+    token_acceso = crear_token(datos={"sub": datos.username})
 
     return {
         "access_token": token_acceso,
