@@ -1,102 +1,55 @@
-
 from fastapi import status, HTTPException, Depends, APIRouter
-from pyparsing import Optional
-from app.data import usuarios
-from app.models.usuarios import crear_usuario   
+from typing import Optional
+from app.data.database import usuarios
+from app.models.usuarios import crear_usuario
 from app.security.auth import verificar_peticion
 
-Router = APIRouter(
-    prefijo="/v1/usuarios",
+router = APIRouter(
+    prefix="/v1/usuarios",
     tags=["Usuarios"]
 )
 
-
-
-@Router.get("/{id}", tags=['Parametro obligatorio'])
-async def Consultauno(id: int):
+@router.get("/{id}")
+async def consulta_uno(id: int):
     for usuario in usuarios:
         if usuario["id"] == id:
-            return {
-                "mensaje": "Usuario encontrado",
-                "Usuario": usuario,
-                "status": 200
-            }
-    return {
-        "mensaje": "Usuario no encontrado",
-        "status": 404
-    }
+            return {"usuario": usuario}
+    raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-@Router.get(tags=['CRUD HTTP'])
-async def Consultatodos(id: Optional[int] = None):
-    if id is not None:
+@router.get("/")
+async def consulta_todos(id: Optional[int] = None):
+    if id:
         for usuario in usuarios:
             if usuario["id"] == id:
-                return {
-                    "mensaje": "Usuario encontrado",
-                    "Usuario": usuario,
-                    "status": 200
-                }
-        return {
-            "mensaje": "Usuario no encontrado",
-            "status": 404
-        }
-    else:
-        # Devuelve la lista completa de usuarios
-        return {
-            "mensaje": "Lista de usuarios",
-            "Usuarios": usuarios,
-            "status": 200
-        }
+                return {"usuario": usuario}
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+    return {"usuarios": usuarios}
 
-
-# agregar usuario (POST)
-@Router.post("/", tags=["CRUD HTTP"])
+@router.post("/", status_code=status.HTTP_201_CREATED)
 async def agregar_usuario(usuario: crear_usuario):
     for usr in usuarios:
         if usr["id"] == usuario.id:
-            raise HTTPException(
-                status_code=status.HTTP_400_BAD_REQUEST,
-                detail="El ID ya existe"
-            )
+            raise HTTPException(status_code=400, detail="ID duplicado")
+    
+    nuevo = usuario.model_dump()
+    usuarios.append(nuevo)
+    return {"usuario": nuevo}
 
-    usuarios.append(usuario)
-
-    return {
-        "mensaje": "Usuario agregado correctamente",
-        "usuario": usuario,
-        "status": 200
-    }
-
-
-# actualizar usuario (PUT)
-@Router.put("/", tags=["CRUD HTTP"])
+@router.put("/")
 async def actualizar_usuario(usuario: dict):
     for usr in usuarios:
         if usr["id"] == usuario.get("id"):
             usr.update(usuario)
-            return {
-                "mensaje": "Usuario actualizado correctamente",
-                "usuario": usr,
-                "status": 200
-            }
+            return {"usuario": usr}
+    raise HTTPException(status_code=404, detail="Usuario no encontrado")
 
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Usuario no encontrado"
-    )
-
-
-# eliminar usuario (DELETE)
-@Router.delete("/{id}", tags=["CRUD HTTP"],status_code=status.HTTP_201_CREATED)
-async def eliminar_usuario(id: int,usuarioAuth: str = Depends(verificar_peticion)):
-    for index, usr in enumerate(usuarios):
+@router.delete("/{id}")
+async def eliminar_usuario(
+    id: int,
+    usuarioAuth: str = Depends(verificar_peticion)
+):
+    for i, usr in enumerate(usuarios):
         if usr["id"] == id:
-            usuarios.pop(index)
-            return {
-                "mensaje": f"Usuario eliminado por {usuarioAuth}"
-            }
-
-    raise HTTPException(
-        status_code=status.HTTP_404_NOT_FOUND,
-        detail="Usuario no encontrado"
-    )
+            usuarios.pop(i)
+            return {"mensaje": f"Eliminado por {usuarioAuth}"}
+    raise HTTPException(status_code=404, detail="Usuario no encontrado")

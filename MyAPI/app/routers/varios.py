@@ -1,23 +1,16 @@
 import asyncio
-from typing import Optional
-from app.data.database import usuarios
 from fastapi import APIRouter
 
-
 routerV = APIRouter(
-    prefix="/inicio")    
+    prefix="/inicio",
+    tags=["Inicio"]
+)
 
-#endpoints
 @routerV.get("/")
 async def bienvenido():
     return {"mensaje": "Bienvenido a FastAPI"}
 
-
 @routerV.get("/holamundo")
-async def Hola():
-    await asyncio.sleep(5)  # simulación de espera
-    return {
-        "mensaje": "Hola mundo",
-        "status": 200
-    }
-
+async def hola():
+    await asyncio.sleep(5)
+    return {"mensaje": "Hola mundo"}

@@ -1,15 +1,13 @@
-#importaciones
-from fastapi import FastAPI,APIRouter  #fastapi libreria
-from MyAPI.app.models import usuarios
-from app.routers import usuarios, varios  
-
+from fastapi import FastAPI
+from app.routers import usuarios, varios
 
 app = FastAPI(
-   title="Mi primer API",
-   description="Licea Gonzalez Eduardo Daniel",
-   version="1.0"
+    title="Mi primer API",
+    description="Licea Gonzalez Eduardo Daniel",
+    version="1.0"
 )
 
-# router de endpoints disponibles
+# incluir routers
 app.include_router(usuarios.router)
-app.include_router(varios.routerV) 
+app.include_router(varios.routerV)
+
