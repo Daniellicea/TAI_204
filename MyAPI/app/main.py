@@ -1,4 +1,3 @@
-main.py
 
 #Se queda 
 from fastapi import FastAPI
