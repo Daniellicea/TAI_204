@@ -6,14 +6,14 @@ services:
     build: .
     container_name: ServerFastAPI
     ports:
-      - "5000:5000"
+      - "5001:5000"
     volumes:
       - .:/app
     depends_on:
       postgres:
         condition: service_healthy
     environment:
-      DATABASE_URL: postgresql://admin:123456@postgres:5432/DB_miapi
+      DATABASE_URL: postgresql://admin:123456@postgres:5432/DB_MyAPI
 
   postgres:
     image: postgres:15
@@ -22,14 +22,14 @@ services:
     environment:
       POSTGRES_USER: admin
       POSTGRES_PASSWORD: 123456
-      POSTGRES_DB: DB_miapi
+      POSTGRES_DB: DB_MyAPI
     ports:
       - "5432:5432"
     volumes:
       - postgres_data:/var/lib/postgresql/data
 
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U admin -d DB_miapi"]
+      test: ["CMD-SHELL", "pg_isready -U admin -d DB_MyAPI"]
       interval: 5s
       retries: 5
       timeout: 5s

@@ -1,5 +1,3 @@
-usuario.py
-
 from sqlalchemy import Column, Integer, String
 from app.data.db import Base
 
