@@ -1,5 +1,5 @@
 from fastapi import status, HTTPException, Depends, APIRouter
-from app.models.usuarios import crear_usuario
+from app.models.usuarios import UsuarioCreate, UsuarioUpdate
 from app.security.auth import verificar_peticion
 
 from app.data.db import get_db
@@ -11,7 +11,7 @@ router = APIRouter(
     tags=["Usuarios"]
 )
 
-# 🔹 Obtener todos los usuarios
+# obtener todos los usuarios
 @router.get("/")
 async def leer_usuarios(db: Session = Depends(get_db)):
     usuarios = db.query(usuarioDB).all()
@@ -21,7 +21,7 @@ async def leer_usuarios(db: Session = Depends(get_db)):
         "usuarios": usuarios
     }
 
-# 🔹 Obtener un usuario por ID
+# obtener un usuario por id
 @router.get("/{id}")
 async def consulta_uno(id: int, db: Session = Depends(get_db)):
     usuario = db.query(usuarioDB).filter(usuarioDB.id == id).first()
@@ -34,9 +34,9 @@ async def consulta_uno(id: int, db: Session = Depends(get_db)):
         "usuario": usuario
     }
 
-# 🔹 Crear usuario
+# crear usuario
 @router.post("/", status_code=status.HTTP_201_CREATED)
-async def agregar_usuario(usuarioP: crear_usuario, db: Session = Depends(get_db)):
+async def agregar_usuario(usuarioP: UsuarioCreate, db: Session = Depends(get_db)):
     usuario_nuevo = usuarioDB(
         nombre=usuarioP.nombre,
         edad=usuarioP.edad
@@ -51,9 +51,9 @@ async def agregar_usuario(usuarioP: crear_usuario, db: Session = Depends(get_db)
         "usuario": usuario_nuevo
     }
 
-# 🔹 Actualizar usuario
+# actualizar usuario completo
 @router.put("/{id}")
-async def actualizar_usuario(id: int, datos: crear_usuario, db: Session = Depends(get_db)):
+async def actualizar_usuario(id: int, datos: UsuarioCreate, db: Session = Depends(get_db)):
     usuario = db.query(usuarioDB).filter(usuarioDB.id == id).first()
 
     if not usuario:
@@ -70,7 +70,29 @@ async def actualizar_usuario(id: int, datos: crear_usuario, db: Session = Depend
         "usuario": usuario
     }
 
-# 🔹 Eliminar usuario
+# actualizar usuario parcial
+@router.patch("/{id}")
+async def actualizar_parcial(id: int, datos: UsuarioUpdate, db: Session = Depends(get_db)):
+    usuario = db.query(usuarioDB).filter(usuarioDB.id == id).first()
+
+    if not usuario:
+        raise HTTPException(status_code=404, detail="Usuario no encontrado")
+
+    if datos.nombre is not None:
+        usuario.nombre = datos.nombre
+
+    if datos.edad is not None:
+        usuario.edad = datos.edad
+
+    db.commit()
+    db.refresh(usuario)
+
+    return {
+        "mensaje": "usuario actualizado parcialmente",
+        "usuario": usuario
+    }
+
+# eliminar usuario
 @router.delete("/{id}")
 async def eliminar_usuario(
     id: int,
