@@ -1,0 +1,89 @@
+{% extends 'base.html' %}
+{% block title %}Nivel 4 - La Linea del Tiempo{% endblock %}
+{% block content %}
+<div class="level-intro">
+    <span class="level-num">Nivel 4 — Final</span>
+    <h1>La Linea del Tiempo</h1>
+    <p class="narrative"><em>"El tiempo no espera a nadie. Conoce las fechas que marcaran tu camino..."</em></p>
+</div>
+
+<h2>Fechas de Examenes</h2>
+<div class="timeline">
+    <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+            <span class="tl-date">01 - Junio - 2026</span>
+            <h3>Examen 1er Parcial</h3>
+            <p>La primera prueba de fuego.</p>
+        </div>
+    </div>
+    <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+            <span class="tl-date">06 - Julio - 2026</span>
+            <h3>Examen 2do Parcial</h3>
+            <p>El desafio intermedio.</p>
+        </div>
+    </div>
+    <div class="tl-item">
+        <div class="tl-dot"></div>
+        <div class="tl-content">
+            <span class="tl-date">10 - Agosto - 2026</span>
+            <h3>Examen 3er Parcial</h3>
+            <p>El Proyecto Integrador vale 50% aqui. Preparate!</p>
+        </div>
+    </div>
+    <div class="tl-item tl-final">
+        <div class="tl-dot dot-gold"></div>
+        <div class="tl-content">
+            <span class="tl-date">17 - Agosto - 2026</span>
+            <h3>Examen Final</h3>
+            <p>El enfrentamiento supremo.</p>
+        </div>
+    </div>
+</div>
+
+{% if not progress.completed %}
+<h2>Prueba del Tiempo</h2>
+<p><em>Responde al menos <strong>2 de 3 preguntas</strong>.</em></p>
+
+<form method="POST" class="quiz">
+    <input type="hidden" name="action" value="submit_quiz">
+    {% for q in section.questions %}
+    <div class="q-card {{ 'correct' if feedback.get(q.id,{}).get('is_correct') else ('wrong' if feedback.get(q.id,{}).get('is_correct') == false else '') }}">
+        <p class="q-text"><strong>{{ loop.index }}.</strong> {{ q.text }}</p>
+        <div class="options">
+            {% for val, label in q.options %}
+            <label class="opt {{ 'picked' if feedback.get(q.id,{}).get('selected')==val else '' }} {{ 'right' if feedback.get(q.id) and val==q.answer else '' }}">
+                <input type="radio" name="{{ q.id }}" value="{{ val }}" {{ 'checked' if feedback.get(q.id,{}).get('selected')==val else '' }} required>
+                <span>{{ val|upper }}. {{ label }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        {% if feedback.get(q.id) %}
+        <div class="fb {{ 'fb-ok' if feedback[q.id].is_correct else 'fb-no' }}">
+            {{ 'Correcto!' if feedback[q.id].is_correct else 'Respuesta correcta: ' ~ q.answer|upper }}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn">Sellar el Destino</button>
+</form>
+
+{% if show_confirm %}
+<form method="POST" class="confirm-form">
+    <input type="hidden" name="action" value="confirm">
+    <label class="confirm-label">
+        <input type="checkbox" name="confirm_check" value="yes">
+        Confirmo que comprendi esta seccion
+    </label>
+    <button type="submit" class="btn btn-gold">Completar la Aventura</button>
+</form>
+{% endif %}
+
+{% else %}
+<div class="banner banner-gold">Aventura completada. Estas listo para Programacion Movil.</div>
+{% endif %}
+
+<a href="{{ url_for('index') }}" class="back">← Volver al Mapa</a>
+{% endblock %}

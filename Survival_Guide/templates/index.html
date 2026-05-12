@@ -1,0 +1,35 @@
+{% extends 'base.html' %}
+{% block title %}Mapa{% endblock %}
+{% block content %}
+<div class="hero">
+    <h1>Survival Guide</h1>
+    <p>Cuatro niveles te separan de dominar <strong>Programacion Movil</strong>. Demuestra tu comprension en cada uno para avanzar.</p>
+    <div class="progress-bar"><div class="progress-fill" style="width:{{ (completed/4*100)|int }}%"></div></div>
+    <small>{{ completed }}/4 niveles completados</small>
+</div>
+
+{% if completed == 4 %}
+<div class="banner banner-gold">Aventura completada. Estas listo para la materia.</div>
+{% endif %}
+
+<div class="levels">
+    {% for key in order %}
+    {% set s = sections[key] %}
+    {% set p = progress[key] %}
+    <div class="level-card {{ 'done' if p.completed else ('open' if p.unlocked else 'locked') }}">
+        <span class="level-num">Nivel {{ loop.index }}</span>
+        <div class="level-icon">{{ '[OK]' if p.completed else (s.icon if p.unlocked else '--') }}</div>
+        <h3>{{ s.title }}</h3>
+        {% if p.completed %}
+            <span class="tag tag-green">Completado</span>
+            <a href="{{ url_for(key) }}" class="btn btn-outline">Revisar</a>
+        {% elif p.unlocked %}
+            <span class="tag tag-purple">Disponible</span>
+            <a href="{{ url_for(key) }}" class="btn">Entrar</a>
+        {% else %}
+            <span class="tag tag-gray">Bloqueado</span>
+        {% endif %}
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

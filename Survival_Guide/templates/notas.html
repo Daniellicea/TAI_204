@@ -1,0 +1,71 @@
+{% extends 'base.html' %}
+{% block title %}Nivel 2 - El Oraculo de las Notas{% endblock %}
+{% block content %}
+<div class="level-intro">
+    <span class="level-num">Nivel 2</span>
+    <h1>El Oraculo de las Notas</h1>
+    <p class="narrative"><em>"Los numeros no mienten. Aqui descubriras como se forja tu destino academico..."</em></p>
+</div>
+
+<h2>Sistema de Evaluacion</h2>
+<div class="table-wrap">
+    <table class="eval-table">
+        <thead>
+            <tr><th>Evidencia</th><th>1er Parcial</th><th>2do Parcial</th><th>3er Parcial</th></tr>
+        </thead>
+        <tbody>
+            <tr><td>Conocimiento</td><td>40%</td><td>40%</td><td>10%</td></tr>
+            <tr><td>Desempeno</td><td>20%</td><td>20%</td><td>10%</td></tr>
+            <tr><td>Producto</td><td>30%</td><td>30%</td><td>30%</td></tr>
+            <tr class="highlight"><td>Proyecto Integrador</td><td>10%</td><td>10%</td><td><strong>50%</strong></td></tr>
+        </tbody>
+        <tfoot>
+            <tr><td><strong>Total</strong></td><td><strong>100%</strong></td><td><strong>100%</strong></td><td><strong>100%</strong></td></tr>
+        </tfoot>
+    </table>
+</div>
+
+{% if not progress.completed %}
+<h2>Enigma del Oraculo</h2>
+<p><em>Responde al menos <strong>2 de 3 preguntas</strong>.</em></p>
+
+<form method="POST" class="quiz">
+    <input type="hidden" name="action" value="submit_quiz">
+    {% for q in section.questions %}
+    <div class="q-card {{ 'correct' if feedback.get(q.id,{}).get('is_correct') else ('wrong' if feedback.get(q.id,{}).get('is_correct') == false else '') }}">
+        <p class="q-text"><strong>{{ loop.index }}.</strong> {{ q.text }}</p>
+        <div class="options">
+            {% for val, label in q.options %}
+            <label class="opt {{ 'picked' if feedback.get(q.id,{}).get('selected')==val else '' }} {{ 'right' if feedback.get(q.id) and val==q.answer else '' }}">
+                <input type="radio" name="{{ q.id }}" value="{{ val }}" {{ 'checked' if feedback.get(q.id,{}).get('selected')==val else '' }} required>
+                <span>{{ val|upper }}. {{ label }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        {% if feedback.get(q.id) %}
+        <div class="fb {{ 'fb-ok' if feedback[q.id].is_correct else 'fb-no' }}">
+            {{ 'Correcto!' if feedback[q.id].is_correct else 'Respuesta correcta: ' ~ q.answer|upper }}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn">Consultar al Oraculo</button>
+</form>
+
+{% if show_confirm %}
+<form method="POST" class="confirm-form">
+    <input type="hidden" name="action" value="confirm">
+    <label class="confirm-label">
+        <input type="checkbox" name="confirm_check" value="yes">
+        Confirmo que comprendi esta seccion
+    </label>
+    <button type="submit" class="btn btn-gold">Desbloquear Siguiente Nivel</button>
+</form>
+{% endif %}
+
+{% else %}
+<div class="banner banner-green">Nivel completado</div>
+{% endif %}
+
+<a href="{{ url_for('index') }}" class="back">← Volver al Mapa</a>
+{% endblock %}

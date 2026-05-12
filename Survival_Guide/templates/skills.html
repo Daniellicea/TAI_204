@@ -1,0 +1,75 @@
+{% extends 'base.html' %}
+{% block title %}Nivel 3 - Skills a Desbloquear{% endblock %}
+{% block content %}
+<div class="level-intro">
+    <span class="level-num">Nivel 3</span>
+    <h1>Skills a Desbloquear</h1>
+    <p class="narrative"><em>"Cada habilidad que domines sera un arma en tu arsenal de desarrollador..."</em></p>
+</div>
+
+<h2>Objetivo</h2>
+<div class="info-card">
+    Desarrollar <strong>aplicaciones moviles</strong> mediante lenguajes de programacion, entornos de desarrollo, diseno de interfaces, arquitecturas, patrones y herramientas.
+</div>
+
+<h2>Competencias</h2>
+<div class="info-card">
+    Desarrollo de <strong>soluciones multiplataforma</strong> usando programacion orientada a objetos, frameworks, bases de datos, estandares de calidad y diseno.
+</div>
+
+<h2>Habilidades Clave</h2>
+<div class="skills-grid">
+    <div class="skill">Lenguajes de Programacion</div>
+    <div class="skill">Entornos de Desarrollo</div>
+    <div class="skill">Diseno de Interfaces</div>
+    <div class="skill">Arquitecturas y Patrones</div>
+    <div class="skill">Frameworks</div>
+    <div class="skill">Bases de Datos</div>
+    <div class="skill">POO</div>
+    <div class="skill">Estandares de Calidad</div>
+</div>
+
+{% if not progress.completed %}
+<h2>Prueba del Herrero</h2>
+<p><em>Responde al menos <strong>2 de 3 preguntas</strong>.</em></p>
+
+<form method="POST" class="quiz">
+    <input type="hidden" name="action" value="submit_quiz">
+    {% for q in section.questions %}
+    <div class="q-card {{ 'correct' if feedback.get(q.id,{}).get('is_correct') else ('wrong' if feedback.get(q.id,{}).get('is_correct') == false else '') }}">
+        <p class="q-text"><strong>{{ loop.index }}.</strong> {{ q.text }}</p>
+        <div class="options">
+            {% for val, label in q.options %}
+            <label class="opt {{ 'picked' if feedback.get(q.id,{}).get('selected')==val else '' }} {{ 'right' if feedback.get(q.id) and val==q.answer else '' }}">
+                <input type="radio" name="{{ q.id }}" value="{{ val }}" {{ 'checked' if feedback.get(q.id,{}).get('selected')==val else '' }} required>
+                <span>{{ val|upper }}. {{ label }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        {% if feedback.get(q.id) %}
+        <div class="fb {{ 'fb-ok' if feedback[q.id].is_correct else 'fb-no' }}">
+            {{ 'Correcto!' if feedback[q.id].is_correct else 'Respuesta correcta: ' ~ q.answer|upper }}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn">Forjar Respuestas</button>
+</form>
+
+{% if show_confirm %}
+<form method="POST" class="confirm-form">
+    <input type="hidden" name="action" value="confirm">
+    <label class="confirm-label">
+        <input type="checkbox" name="confirm_check" value="yes">
+        Confirmo que comprendi esta seccion
+    </label>
+    <button type="submit" class="btn btn-gold">Desbloquear Siguiente Nivel</button>
+</form>
+{% endif %}
+
+{% else %}
+<div class="banner banner-green">Nivel completado</div>
+{% endif %}
+
+<a href="{{ url_for('index') }}" class="back">← Volver al Mapa</a>
+{% endblock %}

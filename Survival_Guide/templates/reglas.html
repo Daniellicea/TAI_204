@@ -1,0 +1,74 @@
+{% extends 'base.html' %}
+{% block title %}Nivel 1 - La Camara de las Reglas{% endblock %}
+{% block content %}
+<div class="level-intro">
+    <span class="level-num">Nivel 1</span>
+    <h1>La Camara de las Reglas</h1>
+    <p class="narrative"><em>"Aventurero, nadie avanza sin conocer los mandamientos. Lee cada decreto con atencion..."</em></p>
+</div>
+
+<h2>Reglamento</h2>
+<ol class="rules-list">
+    <li>Se requiere <strong>80% de asistencia</strong> para evaluacion parcial y 80% de trabajos en clase.</li>
+    <li><strong>10 minutos de tolerancia</strong>; despues no se registra asistencia (7:00 a.m. y 14:00 p.m.).</li>
+    <li>Faltas justificadas en maximo <strong>24 horas</strong> por correo institucional con respaldo del tutor.</li>
+    <li>Tareas en Classroom de forma <strong>individual</strong>, no se aceptan fuera de tiempo.</li>
+    <li>Entregas en <strong>tiempo y forma</strong>.</li>
+    <li>Uso obligatorio del <strong>correo institucional</strong>.</li>
+    <li><strong>Plagio = reprobacion</strong>.</li>
+    <li><strong>Deshonestidad academica</strong> = reprobar el parcial.</li>
+    <li><strong>Indisciplina</strong> puede causar expulsion y perdida de evaluacion.</li>
+    <li>Dispositivos solo para <strong>actividades academicas</strong>.</li>
+    <li>Prohibido uso de <strong>audifonos</strong>.</li>
+    <li>Prohibido <strong>comer o beber</strong> en el aula.</li>
+    <li>Prohibido sentarse sobre mesas o columpiarse en sillas.</li>
+    <li>Problemas academicos: <strong>docente, tutor, coordinacion, direccion</strong>.</li>
+    <li>Casos no previstos se canalizan a direccion.</li>
+    <li>Asistencia <strong>obligatoria</strong> en entrega de calificaciones.</li>
+    <li>El reglamento entra en vigor tras <strong>aceptacion por mayoria</strong>.</li>
+</ol>
+
+{% if not progress.completed %}
+<h2>Prueba del Guardian</h2>
+<p><em>Responde al menos <strong>2 preguntas</strong> correctamente.</em></p>
+
+<form method="POST" class="quiz">
+    <input type="hidden" name="action" value="submit_quiz">
+    {% for q in section.questions %}
+    <div class="q-card {{ 'correct' if feedback.get(q.id,{}).get('is_correct') else ('wrong' if feedback.get(q.id,{}).get('is_correct') == false else '') }}">
+        <p class="q-text"><strong>{{ loop.index }}.</strong> {{ q.text }}</p>
+        <div class="options">
+            {% for val, label in q.options %}
+            <label class="opt {{ 'picked' if feedback.get(q.id,{}).get('selected')==val else '' }} {{ 'right' if feedback.get(q.id) and val==q.answer else '' }}">
+                <input type="radio" name="{{ q.id }}" value="{{ val }}" {{ 'checked' if feedback.get(q.id,{}).get('selected')==val else '' }} required>
+                <span>{{ val|upper }}. {{ label }}</span>
+            </label>
+            {% endfor %}
+        </div>
+        {% if feedback.get(q.id) %}
+        <div class="fb {{ 'fb-ok' if feedback[q.id].is_correct else 'fb-no' }}">
+            {{ 'Correcto!' if feedback[q.id].is_correct else 'Respuesta correcta: ' ~ q.answer|upper }}
+        </div>
+        {% endif %}
+    </div>
+    {% endfor %}
+    <button type="submit" class="btn">Enviar Respuestas</button>
+</form>
+
+{% if show_confirm %}
+<form method="POST" class="confirm-form">
+    <input type="hidden" name="action" value="confirm">
+    <label class="confirm-label">
+        <input type="checkbox" name="confirm_check" value="yes">
+        Confirmo que comprendi esta seccion
+    </label>
+    <button type="submit" class="btn btn-gold">Desbloquear Siguiente Nivel</button>
+</form>
+{% endif %}
+
+{% else %}
+<div class="banner banner-green">Nivel completado</div>
+{% endif %}
+
+<a href="{{ url_for('index') }}" class="back">← Volver al Mapa</a>
+{% endblock %}
